@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="autoCounterApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Automatic Counter</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    h1 { font-size: 60px; color: #0077cc; }
+    button { margin: 5px; padding: 10px 20px; font-size: 18px; }
+  </style>
+</head>
+<body ng-controller="AutoCounterController">
+
+  <h1>{{ counter }}</h1>
+
+  <button ng-click="pause()">Pause</button>
+  <button ng-click="resume()">Resume</button>
+  <button ng-click="reset()">Reset</button>
+
+  <script>
+    // Define AngularJS app
+    var app = angular.module("autoCounterApp", []);
+
+    // Controller with $interval
+    app.controller("AutoCounterController", function($scope, $interval) {
+      $scope.counter = 0;
+      let promise;
+
+      // Function to start the counter
+      function startCounter() {
+        promise = $interval(function() {
+          $scope.counter++;
+        }, 1000); // increment every 1 second
+      }
+
+      // Start automatically on load
+      startCounter();
+
+      // Pause counter
+      $scope.pause = function() {
+        if (promise) {
+          $interval.cancel(promise);
+          promise = null;
+        }
+      };
+
+      // Resume counter
+      $scope.resume = function() {
+        if (!promise) {
+          startCounter();
+        }
+      };
+
+      // Reset counter
+      $scope.reset = function() {
+        $scope.counter = 0;
+      };
+
+      // Cleanup on controller destroy
+      $scope.$on("$destroy", function() {
+        if (promise) {
+          $interval.cancel(promise);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
